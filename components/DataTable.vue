@@ -9,10 +9,9 @@
 
 <script>
 export default {
-  props: ['headers', 'items'],
+  props: ['headers','items'],
   data() {
     return {
-      
     }
   }
 }

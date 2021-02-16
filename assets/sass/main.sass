@@ -1,1 +1,29 @@
 @import ./variables
+
+.v-application
+	font-family: 'Montserrat', sans-serif !important
+
+.v-data-table > .v-data-table__wrapper > table
+	tr:nth-child(odd)
+		background: #fff
+	tr:nth-child(even)
+		background: #eeeeee
+
+.v-label
+	font-size: 13px !important
+
+.v-data-table__wrapper
+	tbody
+		td
+			font-size: 13px !important
+	.v-data-table-header
+		tr
+			th
+				color: #ffffff !important
+				background: $rs__primary
+				font-size: 13px !important
+			th:first-child
+				border-radius: 5px 0 0 0
+			th:last-child
+				border-radius: 0 5px 0 0
+

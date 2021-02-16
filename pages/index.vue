@@ -1,18 +1,20 @@
 <template>
-<!--  v-container-->
-<!--    v-row-->
-<!--      v-col(cols)-->
-<!--        DataTable(-->
-<!--          v-if="items.length"-->
-<!--          :items="items"-->
-<!--  :headers:-->
-<!--        )-->
-<!--        v-progress-circular(-->
-<!--          v-else-->
-<!--          width="2"-->
-<!--          color="rs__primary"-->
-<!--          indeterminate-->
-<!--        ).mx-auto-->
+  <!-- To do ... Convert html to pug -->
+
+      <!--  v-container-->
+      <!--    v-row-->
+      <!--      v-col(cols)-->
+      <!--        DataTable(-->
+      <!--          v-if="items.length"-->
+      <!--          :items="items"-->
+      <!--  :headers:-->
+      <!--        )-->
+      <!--        v-progress-circular(-->
+      <!--          v-else-->
+      <!--          width="2"-->
+      <!--          color="rs__primary"-->
+      <!--          indeterminate-->
+      <!--        ).mx-auto-->
   <div>
     <v-container>
       <v-row>
@@ -33,31 +35,29 @@
                 v-model="search"
                 label="Search"
                 class="mx-4"
+                append-icon="mdi-magnify"
               ></v-text-field>
             </template>
             <template v-slot:body.prepend>
               <tr>
                 <td v-for="header in headers">
-                  <v-text-field v-if="header.text === 'Gender'" v-model="gender" type="text" label="Gender"></v-text-field>
+                  <v-text-field
+                    v-if="header.text === 'Gender'"
+                    v-model="gender"
+                    type="text"
+                    append-icon="mdi-magnify"
+                    label="Gender">
+                  </v-text-field>
                 </td>
               </tr>
             </template>
-<!--            <template v-slot:body.append>-->
-<!--              <tr class="pt-2">-->
-<!--                <td colspan="6">-->
-<!--                  <v-pagination-->
-<!--                    v-model="page"-->
-<!--                    :length="pageCount"-->
-<!--                    class="py-5"-->
-<!--                  ></v-pagination>-->
-<!--                </td>-->
-<!--              </tr>-->
-<!--            </template>-->
           </v-data-table>
+
           <v-progress-circular v-else width="2"
                                color="rs__primary"
                                indeterminate class="mx-auto">
           </v-progress-circular>
+
         </v-col>
       </v-row>
     </v-container>
@@ -80,7 +80,7 @@ export default {
       gender: '',
       totalItems: 0,
       loading: true,
-      options: {},
+      options: {}
     }
   },
   async created() {
@@ -88,26 +88,30 @@ export default {
   },
   methods: {
     async fetchData() {
-        const { page, itemsPerPage } = this.options
+      let { page, itemsPerPage } = this.options
 
-        let items = this.sales.results.filter( item => {
-          return item.user.first_name.toLowerCase().includes( this.search.toLowerCase()) ||
-            item.user.last_name.toLowerCase().includes( this.search.toLowerCase()) ||
-            item.email.toLowerCase().includes( this.search.toLowerCase()) ||
-            item.gender.toLowerCase().includes( this.search.toLowerCase()) ||
-            item.year.toString().includes( this.search.toLowerCase()) ||
-            item.sales.toLowerCase().includes( this.search.toLowerCase()) ||
-            item.country.toLowerCase().includes( this.search.toLowerCase()) &&
-            (this.gender.length && item.gender.toLowerCase().includes( this.gender.toLowerCase()))
-        })
-        const total = items.length
+      let items = this.sales.results.filter( item => {
+        return (item.user.first_name.toLowerCase().includes( this.search.toLowerCase()) ||
+          item.user.last_name.toLowerCase().includes( this.search.toLowerCase()) ||
+          item.email.toLowerCase().includes( this.search.toLowerCase()) ||
+          item.gender.toLowerCase().includes( this.search.toLowerCase()) ||
+          item.year.toString().includes( this.search.toLowerCase()) ||
+          item.sales.toLowerCase().includes( this.search.toLowerCase()) ||
+          item.country.toLowerCase().includes( this.search.toLowerCase())) &&
+          item.gender.toLowerCase().includes( this.gender.toLowerCase())
+      })
 
-        if (itemsPerPage > 0) {
-          items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
-        }
+      if (!items.length) {
+        items = sales.results
+      }
 
-      // const start = page * size
+      const total = items.length
+      if (items.length && itemsPerPage > 0) {
+        items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+      }
+
       await this.delay(100)
+
       return {items, total}
     },
     delay(ms) {
@@ -128,12 +132,12 @@ export default {
   computed: {
     headers() {
       return [
-        {text: 'Name', value: 'user.full_name', align: 'start'},
-        {text: 'Email', value: 'email'},
-        {text: 'Gender', value: 'gender'},
-        {text: 'Year', value: 'year'},
-        {text: 'Sales', value: 'sales'},
-        {text: 'Country', value: 'country'}
+        {text: 'Name', value: 'user.full_name', align: 'start', width: 16.66 + '%', sortable: false},
+        {text: 'Email', value: 'email', width: 16.66 + '%', sortable: false},
+        {text: 'Gender', value: 'gender', width: 16.66 + '%', sortable: false},
+        {text: 'Year', value: 'year', width: 16.66 + '%', sortable: false},
+        {text: 'Sales', value: 'sales', width: 16.66 + '%', sortable: false},
+        {text: 'Country', value: 'country', width: 16.66 + '%', sortable: false}
       ];
     },
     itemsComputed() {
@@ -150,14 +154,34 @@ export default {
       deep: true,
     },
     search() {
-      this.getDataFromApi()
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        this.getDataFromApi()
+      }, 800);
     },
     gender() {
-      this.getDataFromApi()
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      this.timer = setTimeout(() => {
+        this.getDataFromApi()
+      }, 800);
     }
   }
 }
 </script>
+
+<style lang="sass" scoped>
+.v-progress-circular
+  position: absolute
+  top: 50%
+  left: 50%
+</style>
+
 
 <style lang="sass" scoped>
 .v-progress-circular
